@@ -31,6 +31,20 @@ import threading
 HERE = pathlib.Path(__file__).parent
 PRINT_LOCK = threading.Lock()
 
+# Input $/1M by model family, for the run-end estimate only. Prices drift, so
+# this is explicitly labeled an estimate wherever it is printed — never quoted
+# as a bill. Output tokens cost several times more but are a small share of a
+# video run, where the frames dominate.
+RATES = {"flash-lite": 0.30, "3.6-flash": 0.75, "3.7-flash": 0.75,
+         "3.5-flash": 1.50, "pro": 2.00}
+
+
+def rate_for(model):
+    for key, price in sorted(RATES.items(), key=lambda kv: -len(kv[0])):
+        if key in model:
+            return key, price
+    return "unknown", 0.0
+
 
 def log(msg):
     with PRINT_LOCK:
@@ -154,7 +168,13 @@ def main():
 
     log(f"\n{'='*58}")
     log(f"ok={tally['ok']}  failed={tally['failed']}  skipped={tally['skipped']}")
-    log(f"tokens={tokens:,}  approx cost=${tokens * 0.30 / 1e6:.3f} (flash-lite input rate)")
+    label, price = rate_for(args.model)
+    if price:
+        log(f"tokens={tokens:,}  rough est ${tokens * price / 1e6:.2f} "
+            f"at {label} input rate ${price}/1M — estimate, not a bill "
+            f"(output tokens bill higher and are not separated here)")
+    else:
+        log(f"tokens={tokens:,}  (no rate known for {args.model}; check pricing)")
     if tally["failed"]:
         log(f"failures logged to {args.out_dir}/_failures.log — re-run to retry them")
 
