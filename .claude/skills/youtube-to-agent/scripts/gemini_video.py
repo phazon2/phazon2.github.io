@@ -163,6 +163,19 @@ def analyze(part, prompt, model, key):
     text = "".join(p.get("text", "") for p in parts).strip()
     if not text:
         raise SystemExit(f"empty response (finishReason={candidates[0].get('finishReason')})")
+
+    # Video burns tokens fast (~1 fps, every frame billed). Always show the meter
+    # so cost is visible per run rather than discovered on the invoice.
+    u = payload.get("usageMetadata", {})
+    if u:
+        print(
+            f"[usage] prompt={u.get('promptTokenCount', 0):,} "
+            f"output={u.get('candidatesTokenCount', 0):,} "
+            f"thoughts={u.get('thoughtsTokenCount', 0):,} "
+            f"total={u.get('totalTokenCount', 0):,} "
+            f"tier={u.get('serviceTier', '?')}",
+            file=sys.stderr,
+        )
     return text
 
 
