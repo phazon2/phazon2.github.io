@@ -1,6 +1,6 @@
 ---
 name: youtube-to-agent
-description: Turn a video tutorial (YouTube, or any yt-dlp-supported URL) into a Claude Code agent, skill, or slash command. Watches the video twice through independent pipelines — local frames+transcript via /watch, and Gemini's native video understanding — then reconciles both readings into a cross-checked spec before writing anything. Use when the user shares a video URL and wants the workflow in it built, replicated, or automated.
+description: Turn a video into a Claude Code agent, skill, or slash command — or just extract what a video actually says and shows. Reads it through Gemini (server-side fetch, works from cloud containers) and, where the network allows, a second local frames+transcript pass via /watch, reconciling both into a cross-checked spec before writing anything. Use when the user shares a YouTube/Instagram/TikTok URL or local video and wants it analyzed, or the workflow in it built or automated.
 ---
 
 # Video tutorial → Claude Code agent
@@ -16,46 +16,77 @@ disagreement surface as a finding rather than get averaged away.
 
 ## The pipeline
 
-### 1. Ingest locally with `/watch`
+### 0. Check which legs are available here
 
-Requires the `claude-video` plugin:
+Run this first. It decides whether you get one pipeline or two:
+
+```bash
+command -v yt-dlp ffmpeg                       # local leg needs both
+yt-dlp --skip-download --print "%(title)s" "<url>"   # and an unblocked IP
+```
+
+**YouTube blocks datacenter IPs.** From a cloud container (Claude Code on the
+web, CI, a VPS) the local leg returns `HTTP 429` / `IpBlocked` no matter which
+player client or impersonation target you try — it is IP reputation, not
+configuration. On a laptop with a residential connection it works fine.
+
+So the leg availability is environmental, and you must state which you got:
+
+| Environment | Gemini leg | `/watch` leg | Result |
+|---|---|---|---|
+| Local machine, residential IP | ✅ | ✅ | true dual-pipeline |
+| Cloud container | ✅ | ❌ blocked | single-sourced, label it |
+
+Never present a single-leg run as cross-checked.
+
+### 1. Ingest with Gemini (primary — survives IP blocks)
+
+Gemini fetches the video on Google's servers, so nothing depends on this
+machine's IP. This is the leg that works everywhere.
+
+```bash
+export GEMINI_API_KEY=...                      # aistudio.google.com/apikey
+scripts/gemini_video.py --list-models          # naming drifts; check, don't guess
+scripts/gemini_video.py <URL> --prompt-file references/extraction-prompt.md -o gemini.md
+```
+
+The script routes by source automatically:
+
+- **YouTube** → passed natively as `file_uri`; no download. `--start/--end`
+  narrow to a segment.
+- **Instagram, TikTok, local files** → downloaded, uploaded via the Files API,
+  polled until `ACTIVE`. Native URL ingestion is **YouTube-only**; everything
+  else must go through Files.
+
+Free-tier keys are Flash-class and rate-limited (~15 RPM), which is ample for
+analyzing videos one at a time.
+
+### 2. Ingest with `/watch` (second leg, when the network allows)
+
+Only meaningful when step 0 showed the local leg works. Requires the plugin:
 
 ```
 /plugin marketplace add bradautomates/claude-video
 /plugin install watch@claude-video
 ```
 
-Then run it at a fidelity that can actually read on-screen text — tutorials
-are full of terminal output, file paths, and config that never gets spoken:
-
 ```
 /watch <URL> --detail balanced --resolution 1024 <question>
 ```
 
-Ask for the mechanism, not a summary: exact commands typed, file paths and
-their contents, tool and plugin names, the order of operations, and anything
-shown on screen but never said aloud. Note the working directory `/watch`
-prints — the frames and timestamped transcript stay there for follow-ups.
+Use a resolution that can read on-screen text — tutorials are full of terminal
+output, paths, and config that is never spoken. Ask for the mechanism, not a
+summary. Note the working directory it prints; frames and the timestamped
+transcript stay there for follow-ups (`--timestamps` to revisit a moment).
 
-Reach for `--start/--end` when only one segment matters, and `--timestamps`
-to go back for a specific frame once you know what you are looking for.
+Do **not** show it the Gemini output. A second opinion that has read the first
+is not a second opinion.
 
-### 2. Ingest independently with Gemini
-
-Gemini ingests a YouTube URL natively — its own decode, its own sampling, its
-own audio path. That independence is the entire point, so do **not** feed it
-the `/watch` output or your notes from step 1; a second opinion that has read
-the first is not a second opinion.
-
-```bash
-export GEMINI_API_KEY=...   # or GOOGLE_API_KEY
-scripts/gemini_video.py <URL> --prompt-file references/extraction-prompt.md
-```
-
-Ask it the same questions from step 1, worded the same way. If the key is
-missing or the call fails, say so and continue single-sourced — every claim in
-the spec is then `SINGLE-SOURCE (watch)`, which is a weaker artifact, not an
-invisible one.
+**Independence has degrees, and it collapses for non-YouTube sources.** On
+YouTube the two legs fetch separately — genuinely independent. For Instagram or
+TikTok, both legs end up reading the *same downloaded file*, so a truncated or
+corrupted download poisons both identically. Agreement there is weaker
+evidence; say so in the spec rather than claiming a clean cross-check.
 
 ### 3. Reconcile into a spec
 
@@ -65,7 +96,7 @@ Put the two readings side by side and label **every** claim. Use
 | Label | Meaning | What to do |
 |---|---|---|
 | `CONFIRMED` | Both pipelines report it, compatibly | Build on it |
-| `SINGLE-SOURCE (watch \| gemini)` | Only one reports it | Keep, flag; likely a real sampling gap, not a fabrication |
+| `SINGLE-SOURCE (watch \| gemini)` | Only one reports it, or only one leg ran | Keep, flag; a sampling gap or a blocked leg, not a fabrication |
 | `CONFLICT` | They disagree on substance | Resolve before building |
 
 Two claims that differ only in wording are one `CONFIRMED` claim — reconcile
