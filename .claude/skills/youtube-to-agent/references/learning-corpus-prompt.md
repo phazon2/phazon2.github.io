@@ -1,49 +1,87 @@
-Extract the **actionable content** of this video on learning and studying.
-Another pass will merge your output with ~100 sibling videos from the same
-creator, so write for machine merging, not for a human reader. Be terse.
+Extract **everything in this video that could change what someone does in a
+study session.** Another pass merges your output with ~105 sibling videos from
+the same creator, so write for machine merging.
 
-Output these sections, in this order, omitting any that are genuinely empty.
+**Completeness beats brevity.** Length is not a cost here; a missed operational
+detail is. If a video contains forty actionable specifics, return forty. Never
+compress by dropping items, and never stop early because the list feels long.
 
-## TECHNIQUES
-For each concrete, executable technique:
-- **name:** the creator's own term, verbatim if they name one
-- **canonical:** the standard/common name if it differs (e.g. "spaced
-  repetition", "elaborative interrogation", "Feynman technique"), else `same`
-- **do:** the actual steps, numbered. Executable, not motivational.
-- **why:** the stated mechanism — *why* it is claimed to work
-- **when:** the conditions or subjects it is claimed to suit
-- **timestamp:** where it starts
+## What counts as operational
 
-## CLAIMS
-Each falsifiable assertion, one line each, as `claim | evidence | timestamp`.
+Include anything that changes **what you do, when you do it, in what order, or
+for how long**: techniques, sequences, timings, thresholds, quantities,
+decision rules, diagnostic tests, error corrections, worked examples.
 
-For `evidence`, use exactly one of:
-- `STUDY` — a specific named study, author, or paper is cited
-- `RESEARCH-VAGUE` — "studies show" / "research says" with nothing named
-- `EXPERIENCE` — the creator's own practice, students, or coaching
+Capture **numbers exactly as stated** — durations, intervals, repetitions,
+percentages, ratios, session lengths. A number is the most operational thing a
+video can contain and the easiest to lose in paraphrase.
+
+**Deprioritize** motivation, mindset talk, life lessons, and personal anecdote
+*unless* they carry a concrete instruction. "Believe in yourself" is out.
+"When you feel resistance, switch to a lower-order task for ten minutes" is in
+— it names a trigger and an action.
+
+## Output sections
+
+### TECHNIQUES
+For each technique, however minor, and including variants of ones the creator
+has covered elsewhere:
+- **name:** his term, verbatim
+- **canonical:** the standard name if different (e.g. "spaced repetition",
+  "elaborative interrogation", "interleaving"), else `same`
+- **do:** numbered, executable steps. Enough that someone could follow them
+  without the video. Include his exact numbers.
+- **why:** the stated mechanism
+- **when:** conditions, subjects, or stages it suits
+- **when-not:** any stated conditions where it fails or should be avoided
+- **timestamp:**
+
+### PARAMETERS
+Every specific quantity, as `parameter | value | context | timestamp`.
+Examples: session length, break ratio, review interval, number of passes,
+time-per-question, how many concepts per map. These merge into a settings
+sheet, so extract them even when they also appear inside a technique above.
+
+### DECISION-RULES
+Every conditional instruction, as `if <condition> -> then <action> | timestamp`.
+This is the highest-value section for building an actual study system: it is
+what turns a list of techniques into something that runs.
+
+### CLAIMS
+Each falsifiable assertion, as `claim | evidence | timestamp`.
+
+`evidence` is exactly one of:
+- `STUDY` — a specific study, author, paper, or researcher is named
+- `RESEARCH-VAGUE` — "studies show" / "the research says", nothing named
+- `EXPERIENCE` — his own practice, students, or coaching
 - `ASSERTED` — stated with no support offered
 
-This split is the whole point. Do not upgrade `RESEARCH-VAGUE` to `STUDY`
-because a claim sounds scientific.
+Never upgrade `RESEARCH-VAGUE` to `STUDY` because a claim sounds scientific.
+This grading is metadata for later cross-checking, not a verdict on the claim.
 
-## CONTRADICTS-COMMON-ADVICE
-Anything presented as correcting a widespread belief, as
-`common belief -> creator's position -> stated reason`. These are the highest
-value lines in the corpus: they are where this creator's framework actually
-differs from generic study advice, and where the merge pass will find real
-conflicts to resolve.
+### CONTRADICTS-COMMON-ADVICE
+`common belief -> his position -> his stated reason`. Where he corrects
+mainstream study advice.
 
-## PREREQUISITES
-Techniques presented as depending on another technique, skill, or prior video.
-Format: `technique -> depends on`.
+### CORRECTS-HIS-OWN-PRIOR
+Where he revises, softens, or reverses something he has said before —
+"I used to say", "I was wrong about", "this is more nuanced than". Note the old
+and new position. The merge pass needs these to resolve conflicts between
+early and late videos by date rather than by guesswork.
 
-## SELLING
-Any point where the video pitches a course, coaching, community, or product.
-Note the timestamp and what claim it is attached to. Record it plainly; a
-technique is not disqualified by being adjacent to a pitch, but a synthesis
-should be able to see where the incentive sits.
+### DIAGNOSTICS
+Any test, self-check, or symptom he gives for telling whether you are doing
+something correctly, as `symptom/test -> what it indicates -> what to change`.
 
-## UNCLEAR
+### PREREQUISITES
+`technique -> depends on`.
+
+### SELLING
+Timestamps where a course, coaching, or community is pitched, and the claim it
+is attached to. Record plainly — a technique is not disqualified by sitting
+near a pitch, but the merge should be able to see where the incentive is.
+
+### UNCLEAR
 Anything you could not make out, with a timestamp. Never fill a gap with what
-advice of this kind usually says — a plausible invention is worse than a
-labeled hole, because the merge pass cannot detect it.
+advice of this kind usually says: a plausible invention is undetectable
+downstream, whereas a labeled hole can be re-checked.
