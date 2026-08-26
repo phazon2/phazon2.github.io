@@ -87,8 +87,22 @@ def run_one(idx, total, vid, title, args):
         # Record the failure instead of losing it, but leave no partial file
         # behind — an empty .md would be skipped as "done" on the next run.
         out.unlink(missing_ok=True)
-        err = (proc.stderr or proc.stdout).strip().splitlines()
-        tail = err[-1][:160] if err else "unknown error"
+        # API errors arrive as multi-line JSON, whose last line is just "}".
+        # Prefer the human-readable fields, and fall back to the last line that
+        # actually carries text rather than a bare delimiter.
+        raw = (proc.stderr or proc.stdout).strip()
+        tail = "unknown error"
+        m = re.search(r'"message"\s*:\s*"([^"]{4,300})"', raw)
+        if m:
+            tail = m.group(1)
+            st = re.search(r'"status"\s*:\s*"(\w+)"', raw)
+            if st:
+                tail = f"{st.group(1)}: {tail}"
+        else:
+            meaningful = [l.strip() for l in raw.splitlines()
+                          if len(l.strip()) > 3 and l.strip() not in "{}[]"]
+            if meaningful:
+                tail = meaningful[-1][:250]
         (pathlib.Path(args.out_dir) / "_failures.log").open("a").write(
             f"{idx:03d}\t{vid}\t{title}\t{tail}\n"
         )
