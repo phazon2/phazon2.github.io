@@ -28,6 +28,17 @@ SECTIONS = ["TECHNIQUES", "PARAMETERS", "DECISION-RULES", "CLAIMS",
 GRADES = ["STUDY", "RESEARCH-VAGUE", "EXPERIENCE", "ASSERTED"]
 EMPTY = re.compile(r"^\*?\(?\s*(none|n/?a|nothing)\s*\)?\*?$", re.I)
 
+TABLE_SEP = re.compile(r"^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$")
+TABLE_HDR = re.compile(r"^\|\s*(parameter|figure|claim|item|technique|symptom|requirement|"
+                       r"whose|evidence|timestamp|value|context|condition|action|cost)\s*\|", re.I)
+
+
+def is_scaffolding(line):
+    """Markdown table separators and header rows are formatting, not content."""
+    s = line.strip()
+    return bool(TABLE_SEP.match(s) or TABLE_HDR.match(s))
+
+
 
 def parse_front(text):
     if not text.startswith("---"):
@@ -52,7 +63,8 @@ def split_sections(body):
             name = m.group(1).strip()
             current = name if name in SECTIONS else None
             continue
-        if current and line.strip() and not EMPTY.match(line.strip()):
+        if current and line.strip() and not EMPTY.match(line.strip()) \
+                and not is_scaffolding(line):
             out[current].append(line.rstrip())
     return out
 
