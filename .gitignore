@@ -1,4 +1,5 @@
-
-# Video-extraction corpora: derivative third-party content, and this repo is
-# public. Kept out of git pending a decision on a private home for it.
+# Extracted third-party video content — derivative material, kept out of a
+# public repo. The tooling that produces it is versioned; the output is not.
 corpus/
+outreach/*.md
+!outreach/START-HERE.md
