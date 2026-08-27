@@ -3,3 +3,6 @@
 corpus/
 outreach/*.md
 !outreach/START-HERE.md
+
+__pycache__/
+*.pyc
