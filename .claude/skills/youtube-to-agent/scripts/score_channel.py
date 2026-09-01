@@ -40,10 +40,30 @@ def log(m):
 
 
 def norm(t):
+    """Accept @handle, channel URL, or a video URL (resolved to its channel).
+
+    A video URL is the natural thing to paste when you have found a creator
+    through one of their videos, and silently appending /videos to it scores
+    whatever channel YouTube happens to redirect to — a wrong number that
+    looks like a right one.
+    """
     t = t.strip()
-    if t.startswith("http"):
-        return t.rstrip("/")
-    return "https://www.youtube.com/@" + t.lstrip("@")
+    if not t.startswith("http"):
+        return "https://www.youtube.com/@" + t.lstrip("@")
+    t = t.rstrip("/")
+    if "watch?v=" in t or "youtu.be/" in t:
+        p = subprocess.run(
+            ["yt-dlp", "--skip-download", "--no-warnings", "--print",
+             "%(channel_url)s", t],
+            capture_output=True, text=True, timeout=180)
+        ch = p.stdout.strip().splitlines()
+        if ch and ch[-1].startswith("http"):
+            return ch[-1].rstrip("/")
+        raise SystemExit(
+            f"could not resolve channel for {t}\n"
+            f"  {(p.stderr or '').strip().splitlines()[-1][:160] if p.stderr else ''}\n"
+            "  pass the @handle directly instead")
+    return t
 
 
 def fetch(url, n):
