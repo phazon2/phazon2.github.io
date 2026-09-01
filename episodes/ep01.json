@@ -1,0 +1,75 @@
+{
+  "title": "6 Bodyweight Moves That Build Real Strength",
+  "voice": "Kore",
+  "character": { "colour": "orange", "bg": "flat cream" },
+  "palette": { "bg": [246, 240, 230], "ink": [45, 42, 38], "accent": [232, 122, 52] },
+  "cards": {
+    "hook":  ["NO GYM NEEDED", "6 moves · full body"],
+    "outro": ["3 DAYS A WEEK", "start today"]
+  },
+  "hook": "You do not need a gym to build real strength. You need resistance, tension, and progression. These six bodyweight moves cover your whole body, and you can start every one of them today, in the space beside your bed.",
+  "segments": [
+    {
+      "label": "CHEST",
+      "exercises": [
+        {
+          "name": "Push-Up",
+          "cue": "Body in one straight line · 3 sets of 8",
+          "say": "First, the push-up. Start at the top of a high plank, body in one straight line from head to heels. Lower until your chest is a fist above the floor, then press back up. If that is too hard, put your hands on a table instead of the floor. Three sets of eight.",
+          "pose": "BODY POSITION: top of a push-up, high plank, side profile view. The body forms one straight rigid line from head to heels, no sag and no pike. Both arms straight and vertical, hands flat on the ground directly under the shoulders. Both legs straight, only the toes touching the ground. Ground contact points: two hands and two feet only. Knees do NOT touch the ground."
+        }
+      ]
+    },
+    {
+      "label": "LEGS",
+      "exercises": [
+        {
+          "name": "Bodyweight Squat",
+          "cue": "Thighs to parallel · 3 sets of 12",
+          "say": "Next, the squat. Feet shoulder width apart. Push your hips back like you are sitting into a chair behind you, and lower until your thighs are parallel to the floor. Keep your chest up and your heels down. Drive through the floor to stand. Three sets of twelve.",
+          "pose": "BODY POSITION: bottom of a bodyweight squat, side profile view. Both feet flat on the ground, shoulder width apart. Knees bent to ninety degrees with thighs parallel to the ground. Hips pushed back and lowered to knee height. Back straight and leaning slightly forward, not curled. Both arms extended straight forward in front of the chest, parallel to the ground."
+        },
+        {
+          "name": "Split Squat",
+          "cue": "Back knee to the floor · 8 each side",
+          "say": "Then the split squat. One foot forward, one foot back, a long stride apart. Lower straight down until your back knee almost touches the floor, then push back up through the front heel. This one fixes the strength gap between your legs. Eight each side.",
+          "pose": "BODY POSITION: bottom of a split squat, side profile view. One leg forward with the foot flat on the ground and the front knee bent to ninety degrees, front shin vertical. The other leg back with the rear knee bent and hovering just above the ground, rear heel lifted. Torso upright and vertical. Both arms hanging straight down at the sides."
+        }
+      ]
+    },
+    {
+      "label": "BACK",
+      "exercises": [
+        {
+          "name": "Superman Hold",
+          "cue": "Hold 20 seconds · 3 rounds",
+          "say": "For your back, the superman hold. Lie face down, arms stretched out in front of you. Lift your chest, arms and legs off the floor at the same time and hold. Your lower back does the work here, and most people have never trained it directly. Hold twenty seconds, three rounds.",
+          "pose": "BODY POSITION: superman hold, side profile view. Lying face down on the ground with the stomach on the floor. Both arms stretched straight out in front of the head and lifted off the ground. Both legs straight and lifted off the ground behind. The chest is raised off the floor. The body curves gently upward at both ends, only the stomach and hips touching the ground."
+        }
+      ]
+    },
+    {
+      "label": "SHOULDERS",
+      "exercises": [
+        {
+          "name": "Pike Push-Up",
+          "cue": "Hips high · 3 sets of 6",
+          "say": "For shoulders, the pike push-up. From a push-up position, walk your feet in and lift your hips high so your body makes an upside-down V. Now bend your elbows and lower the top of your head toward the floor. This is the closest you get to an overhead press with no equipment. Three sets of six.",
+          "pose": "BODY POSITION: pike push-up start, side profile view. The body forms an inverted V shape. Both hands flat on the ground in front, both feet flat on the ground behind, hips lifted high at the top point of the V. Both arms straight, both legs straight. The head is between the arms, pointing down toward the ground."
+        }
+      ]
+    },
+    {
+      "label": "CORE",
+      "exercises": [
+        {
+          "name": "Hollow Hold",
+          "cue": "Lower back flat · 20 seconds",
+          "say": "Finally, the hollow hold. Lie on your back, press your lower back flat into the floor, then lift your shoulders and legs a few inches. If your lower back lifts off the floor, raise your legs higher until it does not. Twenty seconds is harder than it sounds.",
+          "pose": "BODY POSITION: hollow body hold, side profile view. Lying on the back with the lower back pressed flat against the ground. Both legs straight and lifted a small distance off the ground. Both arms straight and stretched overhead, also lifted off the ground. Head and shoulders raised slightly off the ground. Only the lower back and hips touch the ground, forming a shallow banana shape."
+        }
+      ]
+    }
+  ],
+  "outro": "That is the whole routine. Six moves, three days a week, and add one rep to every set each week. Progression is the part everyone skips, and it is the only part that actually matters. Comment the word HOME and I will send you the printable version."
+}

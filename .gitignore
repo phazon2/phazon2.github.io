@@ -6,3 +6,7 @@ outreach/*.md
 
 __pycache__/
 *.pyc
+
+# Generated episode output — MP4s, frames, and the API response cache.
+# Regenerable from episodes/*.json, and too large for a public repo.
+build/
