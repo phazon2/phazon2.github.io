@@ -1,6 +1,6 @@
 ---
 name: creator-outreach
-description: Find a YouTube creator whose audience is asking for something they do not sell, then build that thing. Screens candidate channels on whether their viewers ask for help (not on subscriber count), harvests and clusters their comments into demand clusters with verbatim evidence, and builds the product. Use when prospecting creators for a digital-product revenue-share partnership, researching what an audience actually wants, or picking which creator to approach.
+description: Find a YouTube creator whose audience is asking for something they do not sell, then build that thing. Screens candidate channels on whether their viewers ask for help (not on subscriber count), harvests and clusters their comments into demand clusters with verbatim evidence, and builds the product. Use when prospecting creators for a digital-product partnership, researching what an audience actually wants, or picking which creator to approach. Read "What this pipeline does not prove" before treating a demand report as a reason to launch.
 ---
 
 # Creator outreach — demand-driven prospecting
@@ -9,6 +9,49 @@ Built 2026-09-14 while testing the "growth operator" method from the Side Hustle
 videos (see the Notion page *📹 Watched Video Findings*). The method's own version of this
 work is manual: watch videos, read comments, guess. That is a week per creator, or a guess
 from three videos. Comments are a JSON endpoint, so neither is necessary.
+
+## What this pipeline does not prove
+
+**It proves the audience wants *something*. It does not prove they want yours, and it says
+nothing about whether they will pay.** Everything below measures demand for a *topic*, from
+people typing free comments. Willingness to pay is a separate question this tooling cannot
+answer, and conflating the two is the failure this section exists to prevent.
+
+Three consequences, learned by building the whole sequence the wrong way round first:
+
+**Conversion is the bottleneck, not acceptance.** A creator posting a link converts perhaps
+1–2% of viewers to a click and 1–3% of those to a sale. On a typical post that is 0–2 sales,
+not a business. A "yes" from a creator does not fix a product nobody has bought — it just
+splits nothing, and spends a relationship doing it. Measure **sales**, never reply rate.
+
+**Pure revenue-share selects for the wrong yes.** A creator hears "let's split the revenue"
+and reads "unpaid work on an unproven product". The ones who accept are disproportionately
+those with no better offers, which usually means an audience that does not convert. Offer a
+choice — a tracked affiliate link, or a flat licence fee — so the yes is informative.
+
+**No tracking kills deals on its own.** Without an affiliate link the creator has to trust a
+stranger's spreadsheet for the numbers. Use a platform with native affiliate dashboards
+(Gumroad, Lemon Squeezy) so they see their own figures.
+
+**The cheap way to close the gap:** list the product yourself somewhere with its own search
+traffic — Etsy for templates, Gumroad for the file — and get one sale from a stranger before
+approaching anyone. Then the pitch carries a conversion rate instead of an assumption. This
+costs roughly nothing and needs no audience, but it does need an account and a payout method,
+so it is the operator's job, not the agent's.
+
+**Lifetime views are not current reach.** A video with 744,894 views accumulated over two years
+may reach very few people this month. The API gives no time series, so treat a big number as
+an unverified maximum, and never repeat it to the creator as evidence — they can check their
+own analytics in seconds.
+
+## Outreach legality, briefly
+
+Commercial email needs real sender identification and a working opt-out — US CAN-SPAM and
+Chile's Ley 19.496 both want this. Low volume plus genuine personalisation behaves completely
+differently from two hundred identical sends: the latter is what gets a domain flagged and a
+personal mailbox throttled. Cap the sequence at two touches, send by hand, honour every "no"
+immediately. Never automate the send: scripted outreach at volume violates platform terms, and
+a ban costs more than the outreach earns.
 
 ## The pipeline
 
@@ -48,9 +91,12 @@ in one niche:
 | The Quickbooks University | 75,500 | 15,682 | **4,308** |
 
 The 53,400-subscriber channel reaches ~1,000 people per video. Ranking on subscribers picked
-it first; ranking on demand reach put it last, and the correct answer sixth. One evergreen
-video matters more than the whole subscriber list — the chosen creator's top video has
-744,894 views and is still accruing.
+it first; ranking on demand reach put it last, and the correct answer sixth.
+
+One caveat that applies to this metric too: median views is a *recent* figure, but a single
+huge lifetime number is not. The chosen creator's top video shows 744,894 views accumulated
+over roughly two years, which says nothing about this month — see "Lifetime views are not
+current reach" above.
 
 ## Comments are graded, not filtered
 
@@ -88,6 +134,21 @@ classes above were invisible until real data went through.
 - **A cluster asking for a *video* is not automatically a product.** "Please make a video on X"
   converts only as templates, scripts or a procedure. A cluster asking for an SOP or a
   calculator is a paid deliverable as-is, and is worth more even with fewer requests.
+
+## Sequence, corrected
+
+1. **Screen** candidates on demand reach (`shortlist.py`), check the no-product filter by eye.
+2. **Cluster** the winner's comments (`demand_harvest.py`), read the verbatim quotes.
+3. **Build** the product (`build_workbook.py`), verify it (`verify_workbook.py`), open it once
+   in a real spreadsheet app.
+4. **Sell one copy yourself** on a platform with its own traffic. This is the gate the first
+   version of this skill was missing.
+5. **Set up tracking** — affiliate links with a dashboard the creator can see.
+6. **Then** approach creators, offering affiliate or licence, with a real conversion rate.
+
+Steps 4 and 5 are cheap and are what make step 6 an offer rather than a favour request. An
+operator may choose to skip them and email first; that is a legitimate call about speed versus
+strength of offer, and it should be a decision, not an oversight.
 
 ## Quota and cost
 
