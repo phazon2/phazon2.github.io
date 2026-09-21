@@ -24,6 +24,7 @@ import argparse
 import json
 import os
 import pathlib
+import re
 import statistics as stt
 import sys
 
@@ -35,6 +36,36 @@ def search_channels(query, key, limit=25):
                  maxResults=min(50, limit), relevanceLanguage="en")
     return [(it["snippet"]["channelId"], it["snippet"]["title"])
             for it in data.get("items", [])]
+
+
+# Storefronts, course platforms and link-in-bio hubs — the things that mean
+# "already monetised". Plain youtube/instagram links do NOT count: nearly every
+# description has those, which is why the first version of this flagged
+# everything and was useless.
+SELLS = (
+    "gumroad", "whop.com", "teachable", "kajabi", "thinkific", "podia", "skool",
+    "stan.store", "beacons.ai", "ko-fi", "buymeacoffee", "patreon", "payhip",
+    "lemonsqueezy", "etsy.com", "shopify", "systeme.io", "circle.so",
+    "my course", "my ebook", "my template", "my bundle", "my masterclass",
+    "enroll", "buy now", "shop now", "grab it", "get the course", "join the",
+    "waitlist", "coaching", "mentorship", "1:1 with me",
+)
+
+# Phrases that need a pattern rather than a substring: "my QuickBooks Masterclass"
+# is a product, "of course" is not, so standalone nouns get word boundaries and
+# possessives get a wildcard for the product's own name.
+SELLS_RE = re.compile(
+    r"\bmasterclass\b|\bbootcamp\b|\bmy \w+ (?:course|ebook|e-book|masterclass|bundle|template|guide|program)\b"
+    r"|\bmy (?:course|ebook|e-book|bundle|template|program)\b|\blink in bio\b|\bstore\b",
+    re.I,
+)
+
+def _sells(desc):
+    """Tells that the bio already has a paid offer. Heuristic — still eyeball it."""
+    d = (desc or "").lower()
+    hits = {t for t in SELLS if t in d}
+    hits |= {m.group(0).strip().lower() for m in SELLS_RE.finditer(desc or "")}
+    return sorted(hits)
 
 
 def screen(channel_id, key, videos, pages):
@@ -77,8 +108,7 @@ def screen(channel_id, key, videos, pages):
         "demand_reach": int((stt.median(views) if views else 0)
                             * ((strong / fetched) if fetched else 0)),
         "email_in_bio": "@" in ch["description"],
-        "link_in_bio": any(s in ch["description"].lower()
-                           for s in ("http", "gumroad", "whop", "course", "shop", "store")),
+        "sells_something": _sells(ch["description"]),
         "examples": examples,
         "latest_titles": [v["title"] for v in vids[:3]],
     }
@@ -152,12 +182,13 @@ def main():
            "Channels whose sample returned fewer than "
            f"{args.min_comments} comments are listed separately: their density is not "
            "measurable, which is not the same as being zero.", "",
-           "| Creator | Subs | Median views | Density | **Demand reach** | Best video | Email? |",
-           "|---|---:|---:|---:|---:|---:|:--:|"]
+           "| Creator | Subs | Median views | Density | **Demand reach** | Already sells? |",
+           "|---|---:|---:|---:|---:|---|"]
     for r in rows:
+        sells = r["sells_something"]
         out.append(f"| {r['title']} | {r['subscribers']:,} | {r['median_views']:,} | "
-                   f"{r['density']:.1f}% | **{r['demand_reach']:,}** | {r['max_views']:,} | "
-                   f"{'yes' if r['email_in_bio'] else '—'} |")
+                   f"{r['density']:.1f}% | **{r['demand_reach']:,}** | "
+                   f"{('**' + ', '.join(sells[:3]) + '**') if sells else 'no tell found'} |")
 
     out += ["", "## Evidence per candidate", ""]
     for r in rows:

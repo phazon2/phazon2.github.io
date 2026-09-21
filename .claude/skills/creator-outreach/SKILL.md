@@ -55,6 +55,34 @@ a ban costs more than the outreach earns.
 
 ## The pipeline
 
+**Use `campaign.py` for every run after the first.** It chains the whole loop —
+search, screen, drop the already-monetised, harvest, cluster, draft the email — and
+writes one ready-to-send package per creator plus an INDEX.md tracker. The four
+scripts below are what it calls, and are still there for one-off work.
+
+```bash
+./scripts/campaign.py "bookkeeping business" "start a bookkeeping business" \
+    --product-url https://you.gumroad.com/l/thing \
+    --product-name "12-Month Bookkeeping Workbook" \
+    --price 39 --code RACHAEL --discount 10 \
+    --sender "Your Name" --location "City, Country" --email you@example.com \
+    --top 5 --out-dir campaign-02/
+```
+
+Resumable: an existing package file is skipped, so a run that dies partway costs
+nothing to repeat.
+
+**Every drafted email is quote-checked.** `verify_quotes()` confirms each block quote
+actually appears in that creator's harvest, and the package says QUOTES VERIFIED or
+names the ones to cut. A fabricated quote turns the strongest part of the pitch into
+the thing that ends the conversation, so this check is not optional.
+
+**It never sends.** The send stays manual — scripted outreach at volume breaks
+platform terms, and a real signature plus the two-touch cap is what keeps it the
+right side of CAN-SPAM and Ley 19.496.
+
+Underneath:
+
 ```
 shortlist.py        search + screen candidates    -> shortlist.md
 demand_harvest.py   harvest + cluster one channel -> <channel>.demand.md
@@ -118,10 +146,14 @@ classes above were invisible until real data went through.
 
 ## Known limits
 
-- **The "no product in bio" filter does not work.** `link_in_bio` matches `http`, which nearly
-  every description contains, so it flags everything. This is the highest-value filter in the
-  method — **check it by eye.** Doing so demoted the two highest-demand-reach candidates
-  (both already sell courses) and promoted the one with no product.
+- **The "no product in bio" filter is a heuristic, not a verdict.** The first version matched
+  bare `http`, which every description contains, so it flagged everything and told us nothing.
+  `_sells()` now looks for real tells — storefronts and course platforms (gumroad, whop,
+  teachable, kajabi, skool, stan.store, payhip …), possessive product phrases ("my QuickBooks
+  Masterclass"), and calls to action ("enroll", "grab it") — while ignoring plain
+  youtube/instagram links. **Still eyeball the About page before emailing.** Doing so on the
+  first run demoted the two highest-demand-reach candidates, both already selling courses,
+  and promoted the one with no product.
 - **Shorts poison a sample.** They return 0–2 comments each and drag the median down. Sample
   more videos rather than trusting a thin denominator; `--min-comments` (default 30) separates
   unscored channels from genuine zeroes.
