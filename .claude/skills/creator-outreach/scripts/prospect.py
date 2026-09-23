@@ -35,8 +35,40 @@ import os
 import pathlib
 import sys
 
+import re
+
 import demand_harvest as dh
 import shortlist as sl
+
+
+# Words that identify nobody. A description carries other people's addresses —
+# sponsors, collaborators, the creator's own second business — and an address
+# extracted from one is not necessarily the creator's. A 157,000-subscriber
+# roofing channel yielded `vito@amazingunderdeck.com`, a sponsor. Emailing that
+# with "your audience keeps asking..." burns the lead and looks like a scrape.
+GENERIC = {"lawn", "care", "business", "cleaning", "pressure", "washing",
+           "window", "junk", "removal", "detailing", "handyman", "painting",
+           "roofing", "service", "services", "channel", "company", "official",
+           "professional", "academy", "exterior", "interior", "grass",
+           "cutting", "mobile", "clean", "wash", "paint", "the", "and", "with",
+           "media", "info", "contact", "hello", "team", "youtube"}
+
+
+def address_confidence(title, email):
+    """'named' | 'generic' | 'mismatch' — does the address belong to this channel?
+
+    Substring, not token equality: "biglinlawncare@gmail.com" is a single token,
+    so comparing whole words finds nothing and calls every real address a
+    mismatch. A distinctive word from the channel name appearing anywhere in the
+    address is the signal.
+    """
+    flat = re.sub(r"[^a-z]", "", (email or "").lower())
+    words = re.findall(r"[a-z]{3,}", (title or "").lower())
+    if any(w not in GENERIC and w in flat for w in words):
+        return "named"
+    if any(w in GENERIC and w in flat for w in words):
+        return "generic"
+    return "mismatch"
 
 
 def prospect(cid, key, videos):
@@ -66,6 +98,9 @@ def prospect(cid, key, videos):
         "obfuscated": bool(sl._emails(ch["description"], desc))
                       and not sl.EMAIL_RE.search(ch["description"] + desc),
         "storefront": sl._storefront(desc) + sl._sells(ch["description"]),
+        "address_confidence": (address_confidence(
+            ch["title"], sl._emails(ch["description"], desc)[0])
+            if sl._emails(ch["description"], desc) else "none"),
         "latest_titles": [v["title"] for v in vids[:3]],
     }
 
@@ -147,6 +182,10 @@ def main():
            "|--:|---|---:|---:|---|---|---|"]
     for i, r in enumerate(sendable, 1):
         flag = " ⚠obfuscated" if r["obfuscated"] else ""
+        if r["address_confidence"] == "mismatch":
+            flag += " ⚠**not the creator?**"
+        elif r["address_confidence"] == "generic":
+            flag += " ⚠generic"
         out.append(f"| {i} | {r['title']} | {r['subscribers']:,} | "
                    f"{r['median_views']:,} | `{r['emails'][0]}`{flag} | "
                    f"{', '.join(r['storefront'][:2]) or '—'} | "
