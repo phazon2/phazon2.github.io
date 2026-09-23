@@ -25,6 +25,7 @@ import json
 import os
 import pathlib
 import re
+import datetime as dt
 import statistics as stt
 import sys
 
@@ -60,6 +61,24 @@ SELLS_RE = re.compile(
     re.I,
 )
 
+# Storefront domains, as opposed to sales *words*. Only these are trusted in a
+# video description: descriptions are full of newsletter and waitlist links, and
+# the soft phrases produce false positives there. Measured — scanning the
+# descriptions of the one genuinely unmonetised creator this pipeline found
+# flagged her on a "waitlist" link, which would have disqualified the only real
+# candidate in two niches. Domains are unambiguous; words are not.
+STOREFRONT = ("gumroad", "whop.com", "teachable", "kajabi", "thinkific", "podia",
+              "skool.com", "stan.store", "payhip", "lemonsqueezy", "systeme.io",
+              "circle.so", "etsy.com/shop", "patreon.com", "ko-fi.com",
+              "buymeacoffee.com", "beacons.ai")
+
+
+def _storefront(desc):
+    """Paid-platform links only. A hit here is a real product, not a phrase."""
+    d = (desc or "").lower()
+    return sorted({t for t in STOREFRONT if t in d})
+
+
 def _sells(desc):
     """Tells that the bio already has a paid offer. Heuristic — still eyeball it."""
     d = (desc or "").lower()
@@ -77,6 +96,17 @@ def screen(channel_id, key, videos, pages):
     stats = dh.video_stats([v["video_id"] for v in vids], key)
     views = [stats.get(v["video_id"], {}).get("views", 0) for v in vids]
     views = [v for v in views if v > 0]
+
+    video_desc = "\n".join(stats.get(v["video_id"], {}).get("description", "")
+                           for v in vids)
+
+    pubs = sorted(v["published"] for v in vids if v.get("published"))
+    last_upload = pubs[-1][:10] if pubs else ""
+    if last_upload:
+        dormant_days = (dt.date.today()
+                        - dt.date(*map(int, last_upload.split("-")))).days
+    else:
+        dormant_days = -1
 
     fetched = strong = weak = 0
     examples = []
@@ -107,8 +137,19 @@ def screen(channel_id, key, videos, pages):
         "max_views": max(views) if views else 0,
         "demand_reach": int((stt.median(views) if views else 0)
                             * ((strong / fetched) if fetched else 0)),
+        # Recency, added after a 164k-subscriber channel with a 13,239-view
+        # median ranked first in a run — and turned out to have stopped
+        # uploading two years earlier, on a video titled "I'm taking a break
+        # from Etsy". A median view count is lifetime accumulation; it does not
+        # decay when a channel dies, so reach alone cannot see this.
+        "last_upload": last_upload,
+        "dormant_days": dormant_days,
         "email_in_bio": "@" in ch["description"],
-        "sells_something": _sells(ch["description"]),
+        # Bio phrases plus storefront LINKS under the videos. Soft sales words
+        # in descriptions are deliberately excluded — see _storefront above.
+        "sells_something": _sells(ch["description"]) + _storefront(video_desc),
+        "storefront_in_descriptions": _storefront(video_desc),
+        "soft_tells_in_descriptions": _sells(video_desc),
         "examples": examples,
         "latest_titles": [v["title"] for v in vids[:3]],
     }
@@ -124,6 +165,10 @@ def main():
     ap.add_argument("--pages", type=int, default=2, help="comment pages per video")
     ap.add_argument("--min-comments", type=int, default=30,
                     help="below this many comments a density is not reportable (default 30)")
+    ap.add_argument("--max-dormant-days", type=int, default=180,
+                    help="drop channels whose newest sampled upload is older "
+                         "than this (default 180). A dead channel keeps its "
+                         "lifetime median views, so reach cannot detect it.")
     ap.add_argument("--per-query", type=int, default=15)
     ap.add_argument("-o", "--out", default="shortlist.md")
     args = ap.parse_args()
@@ -162,7 +207,16 @@ def main():
             rows.append(row)
             print(f"    {row['strong']:>3}/{row['fetched']:>3} strong = {row['density']:>4.1f}%"
                   f"  · median {row['median_views']:>7,} views"
-                  f"  · demand reach {row['demand_reach']:>6,}", file=sys.stderr)
+                  f"  · demand reach {row['demand_reach']:>6,}"
+                  f"  · last upload {row['last_upload'] or '?'}", file=sys.stderr)
+
+    dormant = [r for r in rows
+               if 0 <= args.max_dormant_days < r["dormant_days"]]
+    for r in dormant:
+        skipped.append((r["title"],
+                        f"no upload since {r['last_upload']} "
+                        f"({r['dormant_days']:,} days) — channel looks dead"))
+    rows = [r for r in rows if r not in dormant]
 
     thin = [r for r in rows if r["fetched"] < args.min_comments]
     rows = [r for r in rows if r["fetched"] >= args.min_comments]
@@ -194,6 +248,7 @@ def main():
     for r in rows:
         out += [f"### {r['title']} — demand reach {r['demand_reach']:,}",
                 f"`{r['channel_id']}` · {r['subscribers']:,} subs · "
+                f"last upload {r['last_upload'] or 'unknown'} · "
                 f"median {r['median_views']:,} views (best {r['max_views']:,}) · "
                 f"{r['density']:.1f}% strong · found via \"{r['found_via']}\"",
                 "", "Recent videos: " + "; ".join(r["latest_titles"]), ""]

@@ -174,12 +174,17 @@ def video_stats(video_ids, key):
     stats = {}
     for i in range(0, len(video_ids), 50):
         chunk = video_ids[i:i + 50]
-        data = yt("videos", key, part="statistics", id=",".join(chunk))
+        # snippet rides along on the same 1-unit call. It is here because a
+        # creator's storefront usually lives in the video description, not the
+        # channel About page — a 149k channel with a clean bio turned out to be
+        # selling five products from links under every upload.
+        data = yt("videos", key, part="statistics,snippet", id=",".join(chunk))
         for it in data.get("items", []):
             s = it.get("statistics", {})
             stats[it["id"]] = {
                 "views": int(s.get("viewCount", 0) or 0),
                 "comments": int(s.get("commentCount", 0) or 0),
+                "description": it.get("snippet", {}).get("description", ""),
             }
     return stats
 

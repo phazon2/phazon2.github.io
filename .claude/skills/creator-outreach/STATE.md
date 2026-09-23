@@ -1,7 +1,7 @@
 # State — where the creator-outreach operation actually is
 
 Living file. A session picking this up cold reads this first, then `SKILL.md`.
-Update it at the end of each cycle. Last updated **2026-09-23**.
+Update it at the end of each cycle. Last updated **2026-09-23** (cycle 03).
 
 ## Who is doing this
 
@@ -71,6 +71,52 @@ that do not exist ("twelve monthly input tabs", "printable customer statement
 view") to make three unrelated comments look like a cluster. The clustering pass
 had explicitly refused that dataset and the drafter ignored it.
 
+### Cycle 03 — 2026-09-23 · Etsy / print-on-demand · NOTHING SENT
+
+Screened correctly this time — **screen first, build second**, the cycle-01 correction.
+90 channels found, 16 screened, 3 clean candidates harvested (~3,600 comments).
+
+| Creator | Subs | Median views | Demand reach | Verdict |
+|---|---:|---:|---:|---|
+| Brandon Timothy | 164,000 | 13,239 | **929** | **channel is dead** — see below |
+| Tatyana Savage | 149,000 | 6,647 | **837** | full `stan.store` catalog |
+| Cassie Council | 11,700 | 3,382 | 336 | physical craft, wrong product shape |
+
+**Brandon Timothy is the most useful failure so far.** He ranked first on every
+metric the pipeline had. His newest upload in a 30-video sample is 2024-08-31,
+titled *"I'm taking a break from Etsy (here's why…)"* — dormant two years. A
+median view count is **lifetime accumulation and does not decay when a channel
+dies**, so demand reach cannot see this, and neither could the bio filter.
+Fixed: `shortlist.py` now records `last_upload` and drops anything past
+`--max-dormant-days` (default 180).
+
+**Tatyana Savage** posted yesterday and has real demand, but her video
+descriptions carry a whole storefront — `stan.store/tatyanasavage` selling shop
+starter kits, banner templates, customer-retention templates and an Etsy shop
+Notion planner. Her top cluster (Notion templates, 9 asks, 76 likes) is a
+product she already sells. Note the bio filter missed this too: **the tell was
+in the video descriptions, not the channel About page.** Worth folding into
+`_sells()`.
+
+**Cassie Council** clusters cleanly (10 asks on "how do you seal painted acrylic
+so it doesn't chip") but the demand is for *technique*, not a template. Reach 336.
+
+**The cross-creator signal worth keeping:** "Etsy doesn't support my country"
+appeared independently in **both** 150k channels — 4 strong asks each, including
+sellers in India, Nigeria, Jordan, Kenya and Nicaragua who finished a product and
+then found they could not sell it. That is the largest unserved cluster this
+pipeline has found. It is deliberately **not** being built: it turns on payment
+rails, entity setup and tax residency, where wrong information does real damage
+to the buyer. Revisit only with a source that can be cited.
+
+**The structural read after two niches and 161 channels:** essentially every
+creator with real reach already sells something. The premise "find a creator
+whose audience wants what they don't sell" is, at reach, selecting for creators
+who are *bad at business* — a small population, and not the one whose audience
+converts. Three of three leads across two niches died on this. The gate the skill
+already names and we keep skipping (**sell one copy to a stranger first**) is now
+the higher-value move than a fourth niche.
+
 ## What has been learned the hard way
 
 1. **Rank on demand reach, never subscribers.** A 53,400-sub channel in this niche
@@ -89,7 +135,12 @@ had explicitly refused that dataset and the drafter ignored it.
    the guarantee is what makes a stranger buy at all, and switching it off pushes
    people to chargebacks, which cost more and can flag the account. Revisit only if
    a buy-download-refund pattern actually appears.
-7. **The offer must not be revenue-share only.** It reads as unpaid work on an
+7. **A dead channel keeps its numbers.** Median views never decay, so a
+   two-years-dormant channel can top the ranking. Always check the newest
+   upload date — the filter now does, but check it by eye too.
+8. **The storefront is often in the video descriptions, not the bio.** A
+   channel About page with no product tell is not evidence of no product.
+9. **The offer must not be revenue-share only.** It reads as unpaid work on an
    unproven product and selects for creators whose audience does not convert.
    Always affiliate-or-licence, their choice.
 
