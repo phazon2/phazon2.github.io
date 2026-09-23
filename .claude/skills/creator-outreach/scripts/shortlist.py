@@ -25,6 +25,7 @@ import json
 import os
 import pathlib
 import re
+import unicodedata
 import datetime as dt
 import statistics as stt
 import sys
@@ -71,6 +72,38 @@ STOREFRONT = ("gumroad", "whop.com", "teachable", "kajabi", "thinkific", "podia"
               "skool.com", "stan.store", "payhip", "lemonsqueezy", "systeme.io",
               "circle.so", "etsy.com/shop", "patreon.com", "ko-fi.com",
               "buymeacoffee.com", "beacons.ai")
+
+
+# Addresses, plainly. This is the actual rate limiter on outreach volume: the
+# API never returns a creator's email, and YouTube's About-page reveal is behind
+# a captcha, so every address so far was found by hand — roughly the whole cost
+# of a cycle. But creators who want to be contacted print the address in the
+# bio or under the videos, and descriptions are already being fetched for the
+# storefront check, so this costs nothing extra.
+EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
+# Addresses that are never the creator: platform and tooling boilerplate.
+EMAIL_SKIP = ("noreply", "no-reply", "support@", "help@", "info@youtube",
+              "@youtube.com", "@google.com", "example.com", "@gmail.co\n")
+
+
+def _emails(*texts):
+    """Contact addresses found in a bio or video descriptions, deduped.
+
+    Unicode-normalised first: creators defeat scrapers by typing the address in
+    mathematical-bold codepoints, so a real listing can read as
+    "\U0001d41a\U0001d42c\U0001d424@..." and match nothing. NFKC folds those
+    back to ASCII. Note what that means — an obfuscated address is a creator
+    saying they do not want bulk mail, so it is reported with a flag and stays
+    a judgement call, not an auto-send.
+    """
+    found = []
+    for t in texts:
+        for m in EMAIL_RE.finditer(unicodedata.normalize("NFKC", t or "")):
+            a = m.group(0).strip(".,;:)").lower()
+            if any(bad in a for bad in EMAIL_SKIP) or a in found:
+                continue
+            found.append(a)
+    return found
 
 
 def _storefront(desc):
@@ -145,6 +178,9 @@ def screen(channel_id, key, videos, pages):
         "last_upload": last_upload,
         "dormant_days": dormant_days,
         "email_in_bio": "@" in ch["description"],
+        "emails": _emails(ch["description"], video_desc),
+        "email_obfuscated": bool(_emails(ch["description"], video_desc))
+                            and not EMAIL_RE.search(ch["description"] + video_desc),
         # Bio phrases plus storefront LINKS under the videos. Soft sales words
         # in descriptions are deliberately excluded — see _storefront above.
         "sells_something": _sells(ch["description"]) + _storefront(video_desc),

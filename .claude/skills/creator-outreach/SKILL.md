@@ -81,9 +81,46 @@ the thing that ends the conversation, so this check is not optional.
 platform terms, and a real signature plus the two-touch cap is what keeps it the
 right side of CAN-SPAM and Ley 19.496.
 
+## Volume: address-finding is the bottleneck, not filtering
+
+Three cycles in, the thing capping outreach volume was never the filters — it
+was **email addresses**. The API does not return one, YouTube's About-page
+reveal sits behind a captcha, and so every address was found by hand, which is
+most of the cost of a cycle.
+
+`prospect.py` fixes the ordering. Video descriptions are already fetched for the
+storefront check, and creators who want to be contacted print the address there
+or in the bio, so extraction is free. Measured on one niche: **6 of 17 channels
+(35%) yielded an address with no manual work.**
+
+```bash
+./scripts/prospect.py "pressure washing business" "lawn care business" \
+    --min-subs 3000 --max-subs 500000 -o queue.md
+```
+
+It is deliberately almost unfiltered, dropping only what cannot become a send:
+dead channels, already-contacted creators, and channels with no address. It
+spends **no Gemini tokens** — clustering runs afterwards, on the contactable
+list only, so nothing is spent on a creator who cannot be reached. That is the
+whole volume win: cluster last, not first.
+
+**It no longer filters out creators who already sell**, and this reverses an
+earlier rule. Two niches of evidence went against the original premise: at real
+reach, "find a creator whose audience wants what they don't sell" selects for
+creators who are *bad at business* — three of three leads died on it. A creator
+with a storefront has payment rails, a buying audience and a reason to care
+about margin. That is a better affiliate. The storefront is reported, not
+filtered.
+
+**Obfuscated addresses are flagged, not auto-sent.** Creators type the address
+in mathematical-bold codepoints to defeat scrapers; NFKC normalisation reads it
+anyway. Doing so is worth a pause: that creator is signalling they do not want
+bulk mail, which makes them a judgement call rather than a queue entry.
+
 Underneath:
 
 ```
+prospect.py         search + find addresses       -> queue.md   (no tokens)
 shortlist.py        search + screen candidates    -> shortlist.md
 demand_harvest.py   harvest + cluster one channel -> <channel>.demand.md
 build_workbook.py   build the product             -> product .xlsx
@@ -154,6 +191,20 @@ classes above were invisible until real data went through.
   youtube/instagram links. **Still eyeball the About page before emailing.** Doing so on the
   first run demoted the two highest-demand-reach candidates, both already selling courses,
   and promoted the one with no product.
+- **A dead channel keeps its numbers.** Median views are lifetime accumulation
+  and do not decay when a channel dies, so a dormant channel can top a reach
+  ranking indefinitely. One run's top candidate — 164,000 subscribers, 13,239
+  median views, demand reach 929 — had not uploaded in two years, on a video
+  titled *"I'm taking a break from Etsy (here's why…)"*. `--max-dormant-days`
+  (default 180) now drops these; check the date by eye regardless.
+- **The storefront is usually under the videos, not in the bio.** A 149,000-
+  subscriber channel with a completely clean About page was linking five
+  products from `stan.store` beneath every upload — including the exact Notion
+  planner its top demand cluster was asking for. Descriptions are screened now.
+  The check is two-tier on purpose: scanning descriptions with the bio's phrase
+  list flagged the one genuinely unmonetised creator found in two niches, on a
+  "waitlist" link. Storefront **domains** disqualify; sales **words** in a
+  description only warn.
 - **Shorts poison a sample.** They return 0–2 comments each and drag the median down. Sample
   more videos rather than trusting a thin denominator; `--min-comments` (default 30) separates
   unscored channels from genuine zeroes.
