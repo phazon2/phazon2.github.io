@@ -1,0 +1,5 @@
+# Channels already drafted for or emailed. campaign.py appends here and skips
+# anything listed, so nobody is contacted twice across campaigns.
+# format: <channelId>  <title>  <state>
+UCGTlfnD16-eogZJp5u34i0w  Realistic Bookkeeping  EMAILED 2026-09-21
+UC-sMGky29-T12qajePY9vCQ  QuickBooks From The Top  SKIPPED no real demand cluster

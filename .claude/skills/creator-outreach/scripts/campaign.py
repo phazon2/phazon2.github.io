@@ -53,8 +53,10 @@ Write the email following this proven structure exactly:
    quote. Never invent one. Never tidy the spelling or grammar.
 3. One sentence: how many separate people asked for the same thing.
 4. "So I built it. It's attached, nothing to click, yours to keep either way."
-5. ONE short paragraph on the single design decision that answers their complaint.
-   Concrete and mechanical, not salesy.
+5. ONE short paragraph on what the product does. Use ONLY the PRODUCT FACTS given
+   below. Do not add a feature, tab, or capability that is not in that list, however
+   well it would answer the comments. An invented feature is a lie the buyer discovers
+   on download.
 6. The product link on its own line.
 7. Two options, labelled A and B:
    A. Affiliate link — {price}, code {code} takes {discount} off so their audience pays
@@ -66,6 +68,8 @@ Write the email following this proven structure exactly:
 10. Signature: name, location, email address.
 
 Rules:
+- Address the creator using GREETING NAME exactly as given. The discount code is a
+  coupon, never a person's name — do not greet anyone by it.
 - Under 300 words in the body.
 - No words: collaboration, partnership, opportunity, synergy, exciting, revolutionary.
 - No em-dash-heavy hype. Plain sentences.
@@ -81,7 +85,6 @@ that names the specific thing you built for them. No pitch words. Under 60 chara
 def draft_email(raw, report, args, key, model):
     """Ask Gemini for the email, grounded only in this creator's real comments."""
     name = raw["channel"]["title"]
-    first = (raw["channel"].get("description", "") or "").split()
     comments = []
     for v in raw["videos"]:
         for c in v.get("comments") or []:
@@ -92,8 +95,10 @@ def draft_email(raw, report, args, key, model):
     body = {"contents": [{"parts": [{"text":
         EMAIL_PROMPT.format(price=f"${args.price}", code=args.code,
                             discount=f"${args.discount}", net=f"${net}")
-        + f"\n\n---\nCREATOR: {name}\nCHANNEL: {raw['channel']['channel_id']}\n"
+        + f"\n\n---\nCREATOR: {name}\nGREETING NAME: {args.greeting or name}\n"
+        + f"CHANNEL: {raw['channel']['channel_id']}\n"
         + f"PRODUCT: {args.product_name}\nPRODUCT LINK: {args.product_url}\n"
+        + f"PRODUCT FACTS (the only claims you may make about it):\n{args.product_facts}\n"
         + f"SENDER: {args.sender}\nLOCATION: {args.location}\nEMAIL: {args.email}\n\n"
         + f"DEMAND CLUSTERS FOUND:\n{report[:6000]}\n\n"
         + "VERBATIM COMMENTS (quote only from these):\n" + "\n".join(comments[:120])
@@ -155,6 +160,14 @@ def main():
     ap.add_argument("--price", type=int, default=39)
     ap.add_argument("--code", default="")
     ap.add_argument("--discount", type=int, default=10)
+    ap.add_argument("--product-facts", required=True,
+                    help="the ONLY claims the email may make about the product; "
+                         "pass a file path or the text itself")
+    ap.add_argument("--greeting", default="",
+                    help="first name to open with; defaults to the channel title")
+    ap.add_argument("--contacted",
+                    default=str(pathlib.Path(__file__).resolve().parent.parent / "contacted.txt"),
+                    help="ledger of channels already drafted/emailed, across campaigns")
     ap.add_argument("--top", type=int, default=5, help="creators to draft for")
     ap.add_argument("--min-subs", type=int, default=5_000)
     ap.add_argument("--max-subs", type=int, default=250_000)
@@ -170,8 +183,19 @@ def main():
     if not yt_key or not g_key:
         raise SystemExit("set YOUTUBE_API_KEY and GEMINI_API_KEY")
 
+    facts = pathlib.Path(args.product_facts)
+    if facts.exists():
+        args.product_facts = facts.read_text()
+
     out = pathlib.Path(args.out_dir); out.mkdir(parents=True, exist_ok=True)
     (out / "raw").mkdir(exist_ok=True)
+
+    # One ledger across every campaign, so nobody is drafted — or emailed — twice.
+    ledger = pathlib.Path(args.contacted)
+    already = {l.split()[0] for l in ledger.read_text().splitlines()
+               if l.strip() and not l.startswith("#")} if ledger.exists() else set()
+    if already:
+        print(f"{len(already)} channel(s) already handled, from {ledger}", file=sys.stderr)
 
     # ---- 1. find and screen -------------------------------------------------
     seen, cands = set(), []
@@ -213,8 +237,8 @@ def main():
     for r in fresh[:args.top]:
         slug = re.sub(r"\W+", "-", r["title"].lower()).strip("-")
         pkg = out / f"{slug}.OUTREACH.md"
-        if pkg.exists():
-            print(f"skip (done)  {r['title']}", file=sys.stderr); continue
+        if pkg.exists() or r["channel_id"] in already:
+            print(f"skip (already handled)  {r['title']}", file=sys.stderr); continue
 
         print(f"\n== {r['title']}  (reach {r['demand_reach']:,})", file=sys.stderr)
         raw = dh.harvest(r["channel_id"], yt_key, args.videos, args.pages)
@@ -225,6 +249,24 @@ def main():
             print("   too few strong signals to draft from", file=sys.stderr); continue
 
         report, _ = dh.cluster(raw, g_key, args.model)
+
+        # The clustering pass is allowed to say "there is nothing here". When it
+        # does, drafting anyway produces an email built on unrelated one-off
+        # questions — which is how the first run of this invented product
+        # features to make three stray comments look like a cluster.
+        refusals = ("no demand cluster", "do not manufacture", "clears the minimum",
+                    "isolated queries", "evaluate a different creator")
+        low = report.lower()
+        if any(r in low for r in refusals):
+            skipped.append((r["title"], "clustering found no real demand cluster"))
+            (out / f"{slug}.NO-CLUSTER.md").write_text(
+                f"# No cluster — {r['title']}\n\n"
+                f"`{r['channel_id']}` · demand reach {r['demand_reach']:,}\n\n"
+                "The clustering pass refused this dataset, so no email was drafted. "
+                "Its reasoning:\n\n" + report)
+            print("   clustering refused — no email drafted", file=sys.stderr)
+            continue
+
         drafted, err = draft_email(raw, report, args, g_key, args.model)
         if err:
             skipped.append((r["title"], err)); print("   " + err, file=sys.stderr); continue
@@ -270,6 +312,8 @@ def main():
 {report}
 """)
         made.append((r["title"], r["demand_reach"], subject))
+        with ledger.open("a") as fh:
+            fh.write(f"{r['channel_id']}  {r['title']}  drafted\n")
         print(f"   -> {pkg.name}", file=sys.stderr)
 
     # ---- 3. index -----------------------------------------------------------

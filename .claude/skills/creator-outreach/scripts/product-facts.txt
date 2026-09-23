@@ -1,0 +1,18 @@
+Five tabs: Start Here, Transactions, Monthly P&L, Sales Tax, Categories.
+Transactions: ONE ledger for the whole year, 200 rows, all twelve months in a single
+  tab. There are no monthly tabs and nothing to duplicate.
+The Month column is a formula reading the date, so nothing has to be sorted or split
+  by month. This is what makes the annual total one formula instead of a chain.
+Monthly P&L: 20 income and expense categories across 12 months, plus a Year-to-Date
+  column. 252 live SUMIFS formulas. Updates as you type.
+Sales Tax: one flat rate on one taxable income category; taxable sales and tax owed
+  per month. Explicitly not a substitute for a tax preparer.
+Categories: rename or add your own.
+Built with SUMIFS and MONTH only. No macros, no add-ons. Opens in Excel and in Google
+  Sheets unchanged.
+Instant download, one .xlsx file.
+
+NOT IN THIS PRODUCT — never claim any of these: invoicing, customer statements,
+printable statement views, donor or charitable receipts, payroll, bank feeds or
+bank-connection imports, multi-currency, locked or protected sheets, W-2/W-3 forms,
+per-customer ledgers, accounts receivable ageing.

@@ -44,9 +44,32 @@ threshold, not a failure — check the Gumroad balance instead.
 - Status: **sent, awaiting reply.** Day-6 follow-up due ~2026-09-27, once, then stop.
 - Sales to date: **0**
 
-### Cycle 02 — in progress 2026-09-23
+### Cycle 02 — 2026-09-23 · NOTHING SENT, and the niche looks exhausted
 
-Six queries via `campaign.py`, top 5 packages. Rachael excluded automatically.
+Six queries, 71 channels found, 22 screened, **2 eligible, 1 real** — and the one
+real candidate was Rachael, already emailed.
+
+| Creator | Subs | Median views | Demand reach | Verdict |
+|---|---:|---:|---:|---|
+| Bookkeeping with Jake Demi | — | — | 585 | sells coaching |
+| Realistic Bookkeeping | 38,200 | 9,401 | 486 | already emailed |
+| QuickBooks From The Top | 6,130 | 747 | 224 | **no real cluster** |
+| The Bookkeeping Shop® | 15,700 | 1,602 | 169 | sells a bundle |
+| Veronica Wasek | 53,800 | 841 | 147 | below reach floor |
+| everyone else | | | 0–114 | too thin |
+
+**Read: bookkeeping is done.** Rachael was not the best candidate I happened to
+find, she was close to the only one. Every remaining channel either already sells
+something, has ~1,000-view reach, or has a comment section too thin to cluster.
+More bookkeeping queries will not fix that — the next real move is a second
+product for a different niche.
+
+**This run also exposed four bugs in `campaign.py`, all now fixed** — see the
+commit. Two would have sent a bad email: it greeted a stranger as "Hi Rachael"
+(having read the discount code as a first name), and it invented product features
+that do not exist ("twelve monthly input tabs", "printable customer statement
+view") to make three unrelated comments look like a cluster. The clustering pass
+had explicitly refused that dataset and the drafter ignored it.
 
 ## What has been learned the hard way
 
@@ -76,8 +99,9 @@ Six queries via `campaign.py`, top 5 packages. Rachael excluded automatically.
 - [ ] **Rotate both API keys** — the YouTube and Gemini keys were pasted into a chat
       transcript and live there permanently
 - [ ] First sale from a stranger via Discover — the evidence the pitch still lacks
-- [ ] A second product, for when bookkeeping-adjacent creators run out. The workbook
-      only fits this niche; a new niche means a new build, which is the expensive step.
+- [ ] **A second product — now the blocking item, not a later one.** Cycle 02 showed
+      bookkeeping is exhausted. Pick a niche with commercial-intent buyers, run
+      `campaign.py` to find where the demand is, then build for the winner.
 
 ## Keys
 
