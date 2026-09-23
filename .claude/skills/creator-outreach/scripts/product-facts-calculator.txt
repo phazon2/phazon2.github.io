@@ -1,0 +1,61 @@
+# Job Pricing & Quoting Calculator — the only claims an email may make
+#
+# Same rule as the bookkeeping product: if it is not on this list, it does not
+# go in an email. Cycle 02 produced a draft claiming "twelve monthly input
+# tabs" and a "printable customer statement view", neither of which existed.
+
+FILE
+- One .xlsx workbook, five sheets. No macros.
+- Opens in Excel, Google Sheets, Numbers and LibreOffice.
+- Unit-agnostic: square metres, square feet, acres, per window, per visit,
+  per hour or per day — the rate card row names its own unit.
+- Currency-agnostic: the symbol is set in the number formats at build time.
+
+SHEET 1 — Start here
+- Four numbered steps and two warnings. Nothing to fill in.
+
+SHEET 2 — My Costs
+- Eight editable fixed-cost lines (vehicle, equipment, insurance, phone and
+  software, advertising, premises, accountant, other).
+- A line for what the owner wants to earn in a year, before tax.
+- Weeks per year, days per week, billable hours per day.
+- Returns BREAK-EVEN HOURLY RATE = (fixed costs + owner's pay) / billable hours.
+
+SHEET 3 — Rate Card
+- 17 pre-filled rows, all editable, covering block paving, slab and sandstone
+  patios, tarmac, concrete, decking, tile roof soft wash, hand moss removal,
+  render, gutters, fascia, domestic windows, maintained and overgrown mowing,
+  brush cutting per acre, leaf clearance, and a machine day rate.
+- Each row: rate per unit, units done per hour, and the effective hourly rate
+  that comes out of those two.
+
+SHEET 4 — Quote Builder
+- One job. Takes work type (copied from the rate card), measurement,
+  three multipliers (access, condition, unknowns), chemicals and consumables,
+  disposal fees, round-trip travel distance and cost per unit distance, hired
+  help, minimum call-out charge, and an optional discount.
+- Returns: hours on site, price to quote, total direct costs, profit after
+  direct costs AND the owner's own time at break-even, margin %, effective
+  hourly rate for that job, and a plain-English verdict.
+- Warns explicitly when the work type does not match a rate card row.
+
+SHEET 5 — Quote Log
+- 60 rows: date, customer, work type, price, hours, effective hourly
+  (calculated), won y/n, notes.
+- Totals: quotes sent, quotes won, win rate, value won.
+
+VERIFIED
+- 98 formulas, pre-2007 functions only, so nothing can degrade to #NAME?.
+- Every formula re-computed in Python by verify_quote_calculator.py.
+
+NOT IN THIS PRODUCT — never imply any of these
+- No invoicing, no invoice numbering, no VAT or sales-tax return.
+- No customer database or CRM, no job history per customer.
+- No scheduling, calendar or route planning.
+- No photo handling, before/after reports or PDF quote generation.
+- No e-signature or customer-facing quote document.
+- No payroll, no subcontractor tracking beyond one total pay figure.
+- No mobile app. No automatic pricing by postcode or region.
+- No industry benchmark rates: the 17 pre-filled rates are illustrative
+  starting points to be overwritten, NOT researched market rates. An email
+  must never present them as what anyone should charge.
