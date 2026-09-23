@@ -3,3 +3,30 @@
 # format: <channelId>  <title>  <state>
 UCGTlfnD16-eogZJp5u34i0w  Realistic Bookkeeping  EMAILED 2026-09-21
 UC-sMGky29-T12qajePY9vCQ  QuickBooks From The Top  SKIPPED no real demand cluster
+
+# Cycle 04 — service businesses, 2026-09-23
+UCVSvGy4qjIubndK-6tPqDmA  Biglin Lawn Care  SKIPPED clustering found no usable cluster
+UCyMx_qVbwNUiogmmHvNJNUA  Drake Lawn Care  SKIPPED clustering found no usable cluster
+UC4vrnAONEPpECT1Ybp7udkA  Fish Window Cleaning  SKIPPED clustering found no usable cluster
+UCb1hd9ddggQzv5Y4OiJjZLg  Handyman Process  SKIPPED clustering found no usable cluster
+UChJlxqJLbcFULX-IMBGIaIg  Hunters Mobile Detailing  SKIPPED clustering found no usable cluster
+UCtivVaRqkDH1IJ9c6F6TIeA  Jamie's Detailing - Interior & Exterior Detailing  SKIPPED clustering found no usable cluster
+UCz2CnP1dh6ukLskycvfczeg  Joe Allen the Pressure Washer  SKIPPED clustering found no usable cluster
+UCe9EpkBZWJuiFm9sbn9-QgA  Junk Removal Journey  SKIPPED clustering found no usable cluster
+UCdnS93BpBgrqwetwpIInBIQ  Junk Removal Service  SKIPPED clustering found no usable cluster
+UClnZ48caQksB0r19C_zd8Gg  Junk Teens Junk Removal  SKIPPED clustering found no usable cluster
+UC5-mHTIdpkmUTA_TXN8YzFQ  Kurt’s Pressure Washing  SKIPPED off-season cluster, no product for it
+UCSfIWmT_Zhv06JBOKExR53w  Lawn Care Business Success  SKIPPED clustering found no usable cluster
+UCUwROA0QmBFDxZ6DOuNQLCw  MACK Landscaping & Lawn Care  SKIPPED clustering found no usable cluster
+UCc-g4A-yDHMIxP1RDdjr59A  Maxwells Grass Cutting Services  DRAFTED 2026-09-23 pricing cluster — not yet sent
+UC9VX4kgIPRWy_bzZo9e0cZQ  Mr. Bubbles  SKIPPED clustering found no usable cluster
+UCSl61EUDgAyJu0hQkc-wrhQ  My Pressure Washing Business  SKIPPED clustering found no usable cluster
+UCCfVNgkRrgMzNPrb8nOKigA  OnemanHVAC  SKIPPED clustering found no usable cluster
+UCG_GT8SBjH7fzflyHugBGNA  PaintScout  SKIPPED clustering found no usable cluster
+UCfqMYD9jhWvuvMgM36zNIlA  Partridge Exterior Cleaning  DRAFTED 2026-09-23 pricing cluster — not yet sent
+UCnmkHtZ2BKVutgi2Ogk9RIQ  Roofing Insights  SKIPPED clustering found no usable cluster
+UCJrWBa3QLbOpRiypbegcrUA  Spencer Lawn Care  SKIPPED clustering found no usable cluster
+UCx7INBbIs_rUpd2L2bpZSqQ  SteveO The Window Cleaner  SKIPPED clustering found no usable cluster
+UC80ZKegHxlYhfHRFaVYzsFA  The Academy for Professional Painting Contractors  SKIPPED clustering found no usable cluster
+UCr_5sc7V530bsobhHmce5IQ  The Bulletproof Handyman Business  SKIPPED clustering found no usable cluster
+UCHAmYW_R_VwB9LYpZrNzjjQ  The Lawn Care Life in Mowssouri  DRAFTED 2026-09-23 pricing cluster — not yet sent
