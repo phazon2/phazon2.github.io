@@ -1,0 +1,37 @@
+[Each paragraph below is ONE line with no internal line breaks. Paste them one at a time. Last time a wrapped line glued two words together in the live description.]
+
+Most quoting advice is a number someone else made up. "Don't charge less than £80 an hour." "Don't go by the hour at all." "Charge £300 a day." None of it can be right for you, because the right number depends on what your van, your kit, your insurance and your unpaid hours actually cost — and nobody asking the question knows that figure yet.
+
+This workbook works it out, then prices jobs against it.
+
+It starts with your break-even hourly rate: your real fixed costs for the year, plus what you want to earn, divided by the hours you can honestly bill. That last part is where most people fool themselves. Quoting, travel, invoicing and maintenance are not billable, and they are most of a week.
+
+Then it prices a job. Pick the type of work, enter the measurement, and it returns the price to quote, the hours it will take, the profit left after your costs and your own time, the margin, and the effective hourly rate for that specific job. It ends on a plain verdict: worth doing, thin, or loses money.
+
+There are three multipliers, and they are the part experienced operators will recognise. Access, for the jobs with no parking and a hose run round the back. Condition, for years of neglect. And Unknowns — for the roof you have not been on yet. That is the honest answer to "how do I quote when I cannot see the whole job": you price the uncertainty instead of absorbing it.
+
+WHAT IS IN IT
+
+Start here — four steps, nothing to fill in.
+
+My Costs — eight editable fixed-cost lines, what you want to earn, and honest billable hours. Returns your break-even hourly rate.
+
+Rate Card — 17 editable lines covering block paving, slab and sandstone patios, tarmac, concrete, decking, tile-roof soft washing, hand moss removal, render, gutters, fascia, windows, maintained and overgrown mowing, brush cutting by the acre, leaf clearance and a machine day rate. Each line shows the effective hourly rate it earns you, which is the number worth arguing with.
+
+Quote Builder — one job at a time, with the multipliers, consumables, disposal, travel, hired help, a minimum call-out and an optional discount.
+
+Quote Log — 60 rows with win rate and value won. After twenty jobs this tells you which work to stop quoting for.
+
+WORKS WITH
+
+One .xlsx file, five tabs, no macros and nothing to sign up for. Opens in Excel, Google Sheets, Numbers and LibreOffice. Included in dollars, pounds and euros — download whichever you need.
+
+Measurements are yours: square metres, square feet, acres, per window, per visit, per hour or per day. Each rate line names its own unit, so the sheet never assumes you work the way someone else does.
+
+HONEST NOTES
+
+The 17 rates that come pre-filled are starting points to overwrite, not market research. I do not know what work goes for in your town, and anyone who tells you they do is guessing. The sheet's job is to tell you what YOUR costs make possible.
+
+This is a spreadsheet, not software. There is no invoicing, no customer database, no scheduling and no app. It prices jobs and tells you whether they were worth doing.
+
+Instant download. 30-day refund, no questions.

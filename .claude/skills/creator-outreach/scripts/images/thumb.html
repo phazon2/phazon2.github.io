@@ -1,0 +1,38 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{width:1200px;height:1200px;overflow:hidden;background:#12342F;
+       font-family:Inter,Arial,sans-serif;color:#fff;
+       display:flex;flex-direction:column;justify-content:space-between;padding:76px 70px 0}
+  .kick{font-size:26px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#7FD1C1}
+  h1{font-size:92px;line-height:.99;font-weight:800;letter-spacing:-.03em;margin-top:24px}
+  h1 span{display:block;color:#7FD1C1}
+  .sub{margin-top:28px;font-size:32px;line-height:1.28;color:#BFD8D2;max-width:24ch}
+  .strip{background:#fff;color:#1b1f22;border-radius:16px 16px 0 0;
+         padding:30px 34px;box-shadow:0 -28px 70px rgba(0,0,0,.4)}
+  table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:29px}
+  td{padding:14px 16px;text-align:right;white-space:nowrap;color:#1b1f22}
+  td:first-child{text-align:left}
+  tbody td{border-bottom:1px solid #EAEEEF;color:#1b1f22}
+  tbody td b{color:#12342F}
+  .price td{background:#1E7A6B;color:#fff;font-weight:800;font-size:34px;border:none}
+  .verdict td{background:#0E2A26;color:#7FD1C1;font-weight:800;font-size:29px;border:none}
+</style>
+
+<div>
+  <div class="kick">Excel &amp; Google Sheets</div>
+  <h1>Job Pricing<span>&amp; Quoting</span>Calculator</h1>
+  <div class="sub">Quote the job &mdash; then find out whether it was worth doing.</div>
+</div>
+
+<div class="strip">
+  <table>
+    <tbody>
+      <tr><td>Hours on site</td><td><b>{{Hours on site}}</b></td></tr>
+      <tr class="price"><td>PRICE TO QUOTE</td><td>{{PRICE TO QUOTE}}</td></tr>
+      <tr><td>Profit after your own time</td><td><b>{{Profit after costs and your own time}}</b></td></tr>
+      <tr><td>Effective hourly</td><td><b>{{Effective hourly rate on this job}}</b></td></tr>
+      <tr class="verdict"><td>Verdict</td><td>{{Verdict}}</td></tr>
+    </tbody>
+  </table>
+</div>
